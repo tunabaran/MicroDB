@@ -48,7 +48,7 @@ microDB.save("user",user);
 
 ```
 
-User user = microDB.load("user",Human.class);
+User user = microDB.load("user",User.class);
 
 ```
 
