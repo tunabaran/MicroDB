@@ -32,7 +32,7 @@ public abstract class JsonMapper {
 
             if(f.getType().getName().equals("com.android.tools.ir.runtime.IncrementalChange") ||
                     f.getName().equals("serialVersionUID")){
-                break;
+                continue;
             }
 
             Class typeClass;
