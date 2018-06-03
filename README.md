@@ -44,7 +44,7 @@ microDB.save("user",user);
 
 ```
 
-**You can get object with :**
+**You can load object with :**
 
 ```
 
