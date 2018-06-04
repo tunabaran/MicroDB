@@ -18,6 +18,7 @@ public abstract class JsonMapper {
     private static String TAG = JsonMapper.class.getSimpleName();
 
     private static HashSet<String> primitives = new HashSet<>(Arrays.asList("int","Integer","String","boolean","Boolean","double","Double","long","Long","short","Short","float","Float"));
+    private static HashSet<String> unSupportedTypes = new HashSet<>(Arrays.asList("char","Character"));
 
     public static JSONObject getJsonObject(Object object) throws Exception{
 
@@ -30,6 +31,8 @@ public abstract class JsonMapper {
             String name = f.getName();
             String type = f.getType().getSimpleName();
 
+            controlUnSupportedTypes(type);
+
             if(f.getType().getName().equals("com.android.tools.ir.runtime.IncrementalChange") ||
                     f.getName().equals("serialVersionUID")){
                 continue;
@@ -38,9 +41,12 @@ public abstract class JsonMapper {
             Class typeClass;
             if(primitives.contains(type)){
                 fieldJson.put(name,f.get(object));
-            }else if(type.equals("List")){
+            }else if(List.class.isAssignableFrom(f.getType())){
                 typeClass = List.class;
                 List l = (List)typeClass.cast(f.get(object));
+                if(l == null){
+                    continue;
+                }
                 JSONArray jsonArray = new JSONArray();
                 for(Object o : l) {
                     if(primitives.contains(o.getClass().getSimpleName())){
@@ -58,6 +64,9 @@ public abstract class JsonMapper {
     }
 
     public static <T> T getObjectFromJson(String json, Class<? extends T> objectClass) throws Exception{
+        if(json.length() == 0){
+            return null;
+        }
         T objectInstance = objectClass.newInstance();
 
         JSONObject jsonObject = new JSONObject(json);
@@ -98,6 +107,19 @@ public abstract class JsonMapper {
         }
 
         return objectInstance;
+    }
+
+    private static void controlUnSupportedTypes(String type) throws UnSupportedTypeException{
+        if(unSupportedTypes.contains(type)) {
+            throw new UnSupportedTypeException(type);
+        }
+    }
+
+    public static class UnSupportedTypeException extends Exception{
+
+        public UnSupportedTypeException(String type) {
+            super(type + " is not supported by DB.");
+        }
     }
 
 }
