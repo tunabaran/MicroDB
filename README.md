@@ -4,9 +4,10 @@ Low weight SharedPreferences based DB for Android.
 
 ## INSTALLATION
 
-1-) Copy MicroDB.java and JsonMapper.java to any package in your project.
+Copy MicroDB.java and JsonMapper.java to any package in your project.
 
-2-) Add this dependency to App level gradle file.
+**Some android packages already contains this package, you may not need to include this dependency**
+Add this dependency to App level gradle file.
 
 ```
 
@@ -14,14 +15,11 @@ compile group: 'org.json', name: 'json', version: '20180130'
 
 ```
 **On never versions of gradle**
-
 ```
 
 implementation group: 'org.json', name: 'json', version: '20180130'
 
 ```
-**Some android packages already contains this package, you may not need to include this dependency**
-
 ## HOW TO USE
 
 **To use MicroDB first you need create an object instance.**
