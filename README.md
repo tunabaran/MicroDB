@@ -69,6 +69,21 @@ microDB.clear();
 
 ```
 
+## LIMITATIONS
+
+**Accepted Primitives**
+
+"int","Integer","String","boolean","Boolean","double","Double","long","Long","short","Short","float","Float"
+
+You cannot save primitive type **char**/**Character**
+
+You can save List object that extends List. For example, ArrayList, LinkedList etc.
+
+You can save any object contains accepted primitives and List types.
+
+You can save objects with recursively object fields.
+
+
 ## License
 
 Copyright (C) 2018
