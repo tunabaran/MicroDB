@@ -4,21 +4,23 @@ Low weight SharedPreferences based DB for Android.
 
 ## INSTALLATION
 
-Copy MicroDB.java and JsonMapper.java to any package in your project.
+1-) Add repository to Project level gradle file.
+```
 
-**Some android packages doesn't contain this org.json package, you may need to include this dependency**
-
-Add this dependency to App level gradle file.
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven { url "http://microdb.s3.amazonaws.com" }
+    }
+}
 
 ```
 
-compile group: 'org.json', name: 'json', version: '20180130'
-
-```
-**On never versions of gradle**
+2-)Add dependency to App level gradle file.
 ```
 
-implementation group: 'org.json', name: 'json', version: '20180130'
+implementation group: 'com.tunabaranurut', name: 'microdb', version: '0.1.1', ext: 'aar', classifier: 'debug'
 
 ```
 ## HOW TO USE
@@ -35,7 +37,7 @@ MicroDB uses key value based storage. You need to give keys to objects you save.
 
 You can update/override an object with saving with same key again.
 
-**You can save object with :** 
+**Save object with :** 
 
 ```
 
@@ -43,11 +45,27 @@ microDB.save("user",user);
 
 ```
 
-**You can load object with :**
+**Load object with :**
 
 ```
 
 User user = microDB.load("user",User.class);
+
+```
+
+**Get saved object keys with :**
+
+```
+
+microDB.keySet();
+
+```
+
+**Clear database:**
+
+```
+
+microDB.clear();
 
 ```
 
