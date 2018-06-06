@@ -20,7 +20,9 @@ allprojects {
 2-)Add dependency to App level gradle file.
 ```
 
-implementation group: 'com.tunabaranurut', name: 'microdb', version: '0.1.1', ext: 'aar', classifier: 'debug'
+implementation (group: 'com.tunabaranurut', name: 'microdb', version: '0.2.6', ext: 'aar', classifier: 'debug'){
+    transitive = true
+}
 
 ```
 ## HOW TO USE
@@ -50,6 +52,14 @@ microDB.save("user",user);
 ```
 
 User user = microDB.load("user",User.class);
+
+```
+
+**Delete object with :**
+
+```
+
+User user = microDB.delete("user");
 
 ```
 
