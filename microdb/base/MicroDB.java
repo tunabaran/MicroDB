@@ -38,7 +38,11 @@ public class MicroDB {
         reservedKeys.addAll(Arrays.asList(KEY_DEPOSIT_REFERENCE,DB_NAME));
 
         try {
-            KeySet kSet = objectMapper.readValue(loadFromSharedPreferences(KEY_DEPOSIT_REFERENCE), KeySet.class);
+            String json = loadFromSharedPreferences(KEY_DEPOSIT_REFERENCE);
+            KeySet kSet = null;
+            if(!json.isEmpty()) {
+                kSet = objectMapper.readValue(json, KeySet.class);
+            }
             keySet = kSet == null ? new HashSet<String>() : kSet.getKeys();
         }catch (Exception e){
             e.printStackTrace();
