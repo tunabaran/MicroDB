@@ -1,20 +1,19 @@
 package com.tunabaranurut.microdb.base;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
 
 /**
  * Created by tunabaranurut on 5.06.2018.
  */
 
 public class KeySet {
-    public List<String> keys = new LinkedList<>();
+    public HashSet<String> keys = new HashSet<String>();
 
-    public List<String> getKeys() {
+    public HashSet<String> getKeys() {
         return keys;
     }
 
-    public void setKeys(List<String> keys) {
+    public void setKeys(HashSet<String> keys) {
         this.keys = keys;
     }
 }

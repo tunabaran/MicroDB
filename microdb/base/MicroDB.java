@@ -3,15 +3,12 @@ package com.tunabaranurut.microdb.base;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tunabaranurut.microdb.core.ReservedKeyException;
-import com.tunabaranurut.microdb.util.JsonMapper;
-
-import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * Created by tunabaranurut on 3.06.2018.
@@ -24,21 +21,25 @@ public class MicroDB {
     private WeakReference<Context> wmContext;
 
     private HashSet<String> reservedKeys;
-    private KeySet keySet;
+    private HashSet<String> keySet;
 
     private String KEY_DEPOSIT_REFERENCE = "referenceKeysDeposit0001";
 
     private String DB_NAME = "MicroDB";
 
+    private ObjectMapper objectMapper;
+
     public MicroDB(Context context) {
         wmContext = new WeakReference<>(context);
+
+        objectMapper = new ObjectMapper();
 
         reservedKeys = new HashSet<>();
         reservedKeys.addAll(Arrays.asList(KEY_DEPOSIT_REFERENCE,DB_NAME));
 
         try {
-            keySet = JsonMapper.getObjectFromJson(loadFromSharedPreferences(KEY_DEPOSIT_REFERENCE), KeySet.class);
-            keySet = keySet == null ? new KeySet() : keySet;
+            KeySet kSet = objectMapper.readValue(loadFromSharedPreferences(KEY_DEPOSIT_REFERENCE), KeySet.class);
+            keySet = kSet == null ? new HashSet<String>() : kSet.getKeys();
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -47,67 +48,18 @@ public class MicroDB {
     public void save(String key, Object object) throws Exception{
         controlKey(key);
 
-        if(JsonMapper.isPrimitive(object)){
-            SharedPreferences sharedPref = wmContext.get().getSharedPreferences("preferences", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            switch (object.getClass().getSimpleName()){
-                case "String":
-                    editor.putString(key,(String)object);
-                    break;
-                case "Integer":
-                case "Short":
-                    short s = (Short)object;
-                    editor.putInt(key,(int)s);
-                    break;
-                case "Float":
-                case "Double":
-                    double d = (Double)object;
-                    float f = (float)d;
-                    editor.putFloat(key,f);
-                    break;
-                case "Boolean":
-                    editor.putBoolean(key,(Boolean)object);
-                    break;
-                case "Long":
-                    editor.putLong(key,(Long)object);
-            }
-            editor.apply();
-            return;
-        }
+        String json = objectMapper.writeValueAsString(object);
+        saveToSharedPreferences(key,json);
 
-        JSONObject json = JsonMapper.getJsonObject(object);
-        saveToSharedPreferences(key,json.toString());
         addKey(key);
     }
 
     public <T> T load(String key, Class<? extends T> clss) throws Exception{
-        controlKey(key);
-
-        if(JsonMapper.isPrimitive(clss)){
-            SharedPreferences sharedPref = wmContext.get().getSharedPreferences("preferences", Context.MODE_PRIVATE);
-            Object resp = null;
-            switch (clss.getSimpleName()){
-                case "String":
-                    resp = sharedPref.getString(key,"");
-                    return (T)resp;
-                case "Integer":
-                case "Short":
-                    resp = sharedPref.getInt(key,0);
-                    return (T)resp;
-                case "Float":
-                case "Double":
-                    resp = sharedPref.getFloat(key,0f);
-                    return (T)resp;
-                case "Boolean":
-                    resp = sharedPref.getBoolean(key,false);
-                    return (T)resp;
-                case "Long":
-                    resp = sharedPref.getLong(key,0L);
-                    return (T)resp;
-            }
+        String json = loadFromSharedPreferences(key);
+        if(json.isEmpty()){
+            return null;
         }
-
-        return JsonMapper.getObjectFromJson(loadFromSharedPreferences(key),clss);
+        return objectMapper.readValue(json,clss);
     }
 
     public void delete(String key) throws Exception{
@@ -120,9 +72,9 @@ public class MicroDB {
         removeKey(key);
     }
 
-    public List<String> keySet(){
+    public HashSet<String> keySet(){
         try {
-            return JsonMapper.getObjectFromJson(loadFromSharedPreferences(KEY_DEPOSIT_REFERENCE),KeySet.class).getKeys();
+            return objectMapper.readValue(loadFromSharedPreferences(KEY_DEPOSIT_REFERENCE), KeySet.class).getKeys();
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -137,13 +89,13 @@ public class MicroDB {
 
     private void addKey(String key){
         try {
-            if(!keySet.getKeys().contains(key)) {
-                KeySet keys = JsonMapper.getObjectFromJson(loadFromSharedPreferences(KEY_DEPOSIT_REFERENCE), KeySet.class);
+            if(!keySet.contains(key)) {
+                KeySet keys = objectMapper.readValue(loadFromSharedPreferences(KEY_DEPOSIT_REFERENCE), KeySet.class);
                 keys = keys == null ? new KeySet() : keys;
                 keys.getKeys().add(key);
-                keySet.getKeys().add(key);
-                JSONObject json = JsonMapper.getJsonObject(keys);
-                saveToSharedPreferences(KEY_DEPOSIT_REFERENCE, json.toString());
+                keySet.add(key);
+                String json = objectMapper.writeValueAsString(keys);
+                saveToSharedPreferences(KEY_DEPOSIT_REFERENCE, json);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -152,10 +104,12 @@ public class MicroDB {
 
     private void removeKey(String key){
         try {
-            KeySet keys = JsonMapper.getObjectFromJson(loadFromSharedPreferences(KEY_DEPOSIT_REFERENCE),KeySet.class);
+            KeySet keys = objectMapper.readValue(loadFromSharedPreferences(KEY_DEPOSIT_REFERENCE),KeySet.class);
+            keys = keys == null ? new KeySet() : keys;
             keys.getKeys().remove(key);
-            keySet.getKeys().remove(key);
-            save(KEY_DEPOSIT_REFERENCE, keys);
+            keySet.remove(key);
+            String json = objectMapper.writeValueAsString(keys);
+            saveToSharedPreferences(KEY_DEPOSIT_REFERENCE, json);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -180,4 +134,8 @@ public class MicroDB {
         return sharedPrefString;
     }
 
+
+    public static void main(String[] args){
+
+    }
 }
