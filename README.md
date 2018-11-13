@@ -20,7 +20,7 @@ allprojects {
 2-)Add dependency to App level gradle file.
 ```
 
-implementation (group: 'com.tunabaranurut', name: 'microdb', version: '0.2.6', ext: 'aar', classifier: 'debug'){
+implementation (group: 'com.tunabaranurut', name: 'microdb', version: '0.2.11', ext: 'aar', classifier: 'debug'){
     transitive = true
 }
 
