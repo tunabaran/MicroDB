@@ -39,11 +39,11 @@ public class MicroDB {
 
         try {
             String json = loadFromSharedPreferences(KEY_DEPOSIT_REFERENCE);
-            KeySet kSet = null;
+            HashSet<String> kSet = null;
             if(!json.isEmpty()) {
-                kSet = objectMapper.readValue(json, KeySet.class);
+                kSet = objectMapper.readValue(json, HashSet.class);
             }
-            keySet = kSet == null ? new HashSet<String>() : kSet.getKeys();
+            keySet = kSet == null ? new HashSet<String>() : kSet;
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -94,11 +94,11 @@ public class MicroDB {
     private void addKey(String key){
         try {
             if(!keySet.contains(key)) {
-                KeySet keys = objectMapper.readValue(loadFromSharedPreferences(KEY_DEPOSIT_REFERENCE), KeySet.class);
-                keys = keys == null ? new KeySet() : keys;
-                keys.getKeys().add(key);
+//                KeySet keys = objectMapper.readValue(loadFromSharedPreferences(KEY_DEPOSIT_REFERENCE), KeySet.class);
+//                keys = keys == null ? new KeySet() : keys;
+//                keys.getKeys().add(key);
                 keySet.add(key);
-                String json = objectMapper.writeValueAsString(keys);
+                String json = objectMapper.writeValueAsString(keySet);
                 saveToSharedPreferences(KEY_DEPOSIT_REFERENCE, json);
             }
         }catch (Exception e){
@@ -108,11 +108,11 @@ public class MicroDB {
 
     private void removeKey(String key){
         try {
-            KeySet keys = objectMapper.readValue(loadFromSharedPreferences(KEY_DEPOSIT_REFERENCE),KeySet.class);
-            keys = keys == null ? new KeySet() : keys;
-            keys.getKeys().remove(key);
+//            KeySet keys = objectMapper.readValue(loadFromSharedPreferences(KEY_DEPOSIT_REFERENCE),KeySet.class);
+//            keys = keys == null ? new KeySet() : keys;
+//            keys.getKeys().remove(key);
             keySet.remove(key);
-            String json = objectMapper.writeValueAsString(keys);
+            String json = objectMapper.writeValueAsString(keySet);
             saveToSharedPreferences(KEY_DEPOSIT_REFERENCE, json);
         }catch (Exception e){
             e.printStackTrace();
